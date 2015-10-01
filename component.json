@@ -6,7 +6,9 @@
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
-    "segmentio/analytics.js-integration": "^1.0.0"
+    "segmentio/analytics.js-integration": "^1.0.0",
+    "ndhoule/foldl":"^1.0.3",
+    "ndhoule/each":"^1.0.3"
     },
   "development": {
     "segmentio/analytics.js-core": "^2.10.0",
