@@ -9,16 +9,15 @@ describe('Facebook Ads for Websites', function(){
   var facebookAdsForWebsites;
   var analytics;
   var options = {
-    // TODO: fill in this dictionary with the fake options required to test
-    // that the integration can load properly. We'll need to get test
-    // credentials for every integration, so that we can make sure it is
-    // working properly.
-    //
-    // Here's what test credentials might look like:
-    //
-    //   {
-    //     apiKey: 'V7TLXL5WWBA5NOU5MOJQW4'
-    //   }
+    pixelId: '216411418569295',
+    standardEvents: {
+      signup: 0,
+      login: 1,
+      play: 2,
+      'Viewed Name Page': 3,
+      'Viewed Category Name Page': 4
+    },
+    legacyConversionEvents: { 'conversion-event': 1293871928 }
   };
 
   beforeEach(function(){
@@ -37,12 +36,12 @@ describe('Facebook Ads for Websites', function(){
   });
 
   it('should have the right settings', function(){
-    // TODO: add any additional options or globals from the source file itself
-    // to this list, and they will automatically get tested against, like:
-    // integration('Facebook Ads for Websites')
-    //   .global('__myIntegration')
-    //   .option('apiKey', '')
     analytics.compare(FacebookAdsForWebsites, integration('Facebook Ads for Websites')
+        .global('fbq')
+        .option('pixelId', '')
+        .option('currency', 'USD')
+        .mapping('standardEvents')
+        .mapping('legacyConversionEvents'));
   });
 
   describe('before loading', function(){
@@ -55,12 +54,15 @@ describe('Facebook Ads for Websites', function(){
     });
 
     describe('#initialize', function(){
-      // TODO: test .initialize();
+      it('should call #load', function() {
+        analytics.load(facebookAdsForWebsites, done);
+      });
     });
 
-    describe('should call #load', function(){
-      // TODO: test that .initialize() calls `.load()`
-      // you can remove this if it doesn't call `.load()`.
+    describe('should call #load', function(){.
+        analytics.initialize();
+        analytics.page();
+        analytics.called(facebookAdsForWebsites.load);
     });
   });
 
@@ -79,15 +81,15 @@ describe('Facebook Ads for Websites', function(){
 
     describe('#page', function(){
       beforeEach(function(){
-        // TODO: stub the global API if needed
-        // example: analytics.stub(window.api, 'logEvent');
-        analytics.stub()
+        analytics.stub(window.fbq, push)
       });
 
       it('should not track unnamed pages by default', function(){
         // TODO: test that the integration does not track
         // unnamed pages by default, so `.trackAllPages` option
         // is false by default.
+        analytics.page({ url: 'http://localhost:34448/test/' });
+        analytics.called(window._fbq.push, ['track', 'PageView']);
       });
 
       it('should track named pages if enabled', function(){
