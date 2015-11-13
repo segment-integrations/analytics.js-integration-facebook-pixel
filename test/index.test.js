@@ -1,10 +1,10 @@
-
-var Analytics = require('analytics.js').constructor;
+var Analytics = require('analytics.js-core').constructor;
 var integration = require('analytics.js-integration');
-var plugin = require('./');
 var sandbox = require('clear-env');
+var tester = require('analytics.js-integration-tester');
+var plugin = require('../lib/');
 
-describe('Facebook Ads for Websites', function(){
+describe('Facebook Conversion Tracking', function() {
   var FacebookAdsForWebsites = plugin;
   var facebookAdsForWebsites;
   var analytics;
@@ -13,9 +13,7 @@ describe('Facebook Ads for Websites', function(){
     standardEvents: {
       signup: 0,
       login: 1,
-      play: 2,
-      'Viewed Name Page': 3,
-      'Viewed Category Name Page': 4
+      'Loaded a Page': 2
     },
     legacyConversionEvents: { 'conversion-event': 1293871928 }
   };
@@ -37,11 +35,11 @@ describe('Facebook Ads for Websites', function(){
 
   it('should have the right settings', function(){
     analytics.compare(FacebookAdsForWebsites, integration('Facebook Ads for Websites')
-        .global('fbq')
-        .option('pixelId', '')
-        .option('currency', 'USD')
-        .mapping('standardEvents')
-        .mapping('legacyConversionEvents'));
+      .global('fbq')
+      .option('pixelId', '')
+      .option('currency', 'USD')
+      .mapping('legacyConversionEvents')
+      .mapping('standardEvents'));
   });
 
   describe('before loading', function(){
@@ -55,14 +53,16 @@ describe('Facebook Ads for Websites', function(){
 
     describe('#initialize', function(){
       it('should call #load', function() {
-        analytics.load(facebookAdsForWebsites, done);
-      });
-    });
-
-    describe('should call #load', function(){.
         analytics.initialize();
         analytics.page();
         analytics.called(facebookAdsForWebsites.load);
+      });
+    });
+
+    describe('should call #load', function(){
+        analytics.initialize();
+        analytics.page();
+        analytics.assert(facebook.loaded());
     });
   });
 
@@ -72,79 +72,127 @@ describe('Facebook Ads for Websites', function(){
     });
   });
 
-  describe('after loading', function(){
-    beforeEach(function(done){
+  describe('after loading', function() {
+    beforeEach(function(done) {
       analytics.once('ready', done);
       analytics.initialize();
       analytics.page();
     });
 
-    describe('#page', function(){
-      beforeEach(function(){
-        analytics.stub(window.fbq, push)
+    describe('#page', function() {
+      beforeEach(function() {
+         analytics.stub(window.fbq, push);
       });
 
-      it('should not track unnamed pages by default', function(){
-        // TODO: test that the integration does not track
-        // unnamed pages by default, so `.trackAllPages` option
-        // is false by default.
+      it('should track page views', function(){
         analytics.page({ url: 'http://localhost:34448/test/' });
-        analytics.called(window._fbq.push, ['track', 'PageView']);
+        analytics.called(window.fbq.push, ['track', 'PageView']);
       });
 
-      it('should track named pages if enabled', function(){
-        facebookAdsForWebsites.options.trackAllPages = true;
-        analytics.page();
-        // TODO: assert that the api was called properly
-        // analytics.called(window.api.logEvent, 'Loaded a Page');
-      });
-
-      it('should track named pages by default', function(){
-        analytics.page('Name');
-        // TODO: assert that the api was called properly
-        // analytics.called(window.api.logEvent, 'Viewed Name Page');
-      });
-
-      it('should track named pages with a category added', function(){
-        analytics.page('Category', 'Name');
-        // TODO: assert that the api was called properly
-        // analytics.called(window.api.logEvent, 'Viewed Category Name Page');
-      });
-
-      it('should track categorized pages by default', function(){
-        analytics.page('Category', 'Name');
-        // TODO: assert that the api was called properly
-        // analytics.called(window.api.logEvent, 'Viewed Category Page');
-      });
-
-      it('should not track name or categorized pages if disabled', function(){
-        facebookAdsForWebsites.options.trackNamedPages = false;
-        facebookAdsForWebsites.options.trackCategorizedPages = false;
-        analytics.page('Category', 'Name');
-        // TODO: assert that the api was not called
-        // analytics.didNotCall(window.api.logEvent);
+      it('should track page view with fullname', function() {
+        analytics.page('Category', 'Name', { url: 'http://localhost:34448/test/' });
+        analytics.called(window.fbq.push, ['track', 5, {
+          currency: 'USD',
+          value: '0.00'
+        }]);
       });
     });
 
-
-
-    describe('#track', function(){
-      beforeEach(function(){
-        // TODO: stub the integration global api.
-        // for example:
-        // analytics.stub(window.api, 'logEvent');
+    describe('#track', function() {
+      beforeEach(function() {
+        analytics.stub(window.fbq, 'push');
       });
 
-      it('should send an event', function(){
-        analytics.track('event');
-        // TODO: assert that the event is sent.
-        // analytics.called(window.api.logEvent, 'event');
+      it('should send event if found', function() {
+        analytics.track('signup', {});
+        analytics.called(window.fbq.push, ['track', 0, {
+          currency: 'USD',
+          value: '0.00'
+        }]);
+      });
+
+      it('should send paged event if found', function() {
+        analytics.track('Loaded A Page', {});
+        analytics.called(window.fbq.push, ['trackCustom', 'Loaded A Page', {}]);
+        analytics.called(window.fbq.push, ['track', 2, {
+          currency: 'USD',
+          value: '0.00'
+        }]);
       });
 
       it('should send an event and properties', function(){
         analytics.track('event', { property: true });
-        // TODO: assert that the event is sent.
-        // analytics.called(window.api.logEvent, 'event', { property: true });
+        analytics.called(window.fbq.push, ['trackCustom', 'event', { property: true }]);
+      });
+
+      it('should send ecommerce event - Viewed Product Category', function() {
+        analytics.track('Viewed Product Category', {
+          id: '507f1f77bcf86cd799439011',
+          category: 'cat'
+        });
+        analytics.called(window.fbq.push, ['track', 'ViewContent', {
+          content_ids: ['507f1f77bcf86cd799439011'],
+          content_type: 'cat'
+        }]);
+      });
+
+      it('should send ecommerce event - Viewed Product', function() {
+        analytics.track('Viewed Product', {
+          id: '507f1f77bcf86cd799439011',
+          currency: 'USD',
+          value: 0.50,
+          quantity: 1,
+          price: 24.75,
+          name: 'my product',
+          category: 'cat 1',
+          sku: 'p-298'
+        });
+        analytics.called(window.fbq.push, ['track', 'ViewContent', {
+          content_ids: ['507f1f77bcf86cd799439011'],
+          content_type: 'product',
+          content_name: 'my product',
+          content_category: 'cat 1',
+          currency: 'USD',
+          value: 0.50
+        }]);
+      });
+
+      it('should send ecommerce event - Adding to Cart', function() {
+        analytics.track('Added Product', {
+          id: '507f1f77bcf86cd799439011',
+          currency: 'USD',
+          value: 0.50,
+          quantity: 1,
+          price: 24.75,
+          name: 'my product',
+          category: 'cat 1',
+          sku: 'p-298'
+        });
+        analytics.called(window.fbq.push, ['track', 'AddToCart', {
+          content_ids: ['507f1f77bcf86cd799439011'],
+          content_type: 'product',
+          content_name: 'my product',
+          content_category: 'cat 1',
+          currency: 'USD',
+          value: 0.50
+        }]);
+      });
+
+      it('should send ecommerce event - Completing an Order', function() {
+        analytics.track('Completed Order', {
+          products: [
+           { id: '507f1f77bcf86cd799439011' },
+           { id: '505bd76785ebb509fc183733' }
+          ],
+          currency: 'USD',
+          value: 0.50
+      });
+      analytics.called(window.fbq.push, ['track', 'Purchase', {
+        content_ids: ['507f1f77bcf86cd799439011', '505bd76785ebb509fc183733'],
+        content_type: 'product',
+        currency: 'USD',
+        value: 0.50
+      }]);
       });
     });
   });
