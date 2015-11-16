@@ -19,7 +19,7 @@ describe('Facebook Conversion Tracking', function() {
   };
 
   beforeEach(function(){
-    analytics = new Analytics;
+    analytics = new Analytics();
     facebookAdsForWebsites = new FacebookAdsForWebsites(options);
     analytics.use(plugin);
     analytics.use(tester);
@@ -59,10 +59,14 @@ describe('Facebook Conversion Tracking', function() {
       });
     });
 
-    describe('should call #load', function(){
+    describe('#loaded', function() {
+      it('should return `true` if window.fbq inited', function() {
         analytics.initialize();
-        analytics.page();
-        analytics.assert(facebook.loaded());
+        analytics.assert(!facebookAdsForWebsites.loaded());
+        window._fbq.queue = [];
+        window._fbq.push = function() {};
+        analytics.assert(facebookAdsForWebsites.loaded());
+      });
     });
   });
 
@@ -81,17 +85,17 @@ describe('Facebook Conversion Tracking', function() {
 
     describe('#page', function() {
       beforeEach(function() {
-         analytics.stub(window.fbq, push);
+         analytics.stub(window._fbq, push);
       });
 
       it('should track page views', function(){
         analytics.page({ url: 'http://localhost:34448/test/' });
-        analytics.called(window.fbq.push, ['track', 'PageView']);
+        analytics.called(window._fbq.push, ['track', 'PageView']);
       });
 
       it('should track page view with fullname', function() {
         analytics.page('Category', 'Name', { url: 'http://localhost:34448/test/' });
-        analytics.called(window.fbq.push, ['track', 5, {
+        analytics.called(window._fbq.push, ['track', 5, {
           currency: 'USD',
           value: '0.00'
         }]);
@@ -100,12 +104,12 @@ describe('Facebook Conversion Tracking', function() {
 
     describe('#track', function() {
       beforeEach(function() {
-        analytics.stub(window.fbq, 'push');
+        analytics.stub(window._fbq, 'push');
       });
 
       it('should send event if found', function() {
         analytics.track('signup', {});
-        analytics.called(window.fbq.push, ['track', 0, {
+        analytics.called(window._fbq.push, ['track', 0, {
           currency: 'USD',
           value: '0.00'
         }]);
@@ -113,8 +117,8 @@ describe('Facebook Conversion Tracking', function() {
 
       it('should send paged event if found', function() {
         analytics.track('Loaded A Page', {});
-        analytics.called(window.fbq.push, ['trackCustom', 'Loaded A Page', {}]);
-        analytics.called(window.fbq.push, ['track', 2, {
+        analytics.called(window._fbq.push, ['trackCustom', 'Loaded A Page', {}]);
+        analytics.called(window._fbq.push, ['track', 2, {
           currency: 'USD',
           value: '0.00'
         }]);
@@ -122,7 +126,7 @@ describe('Facebook Conversion Tracking', function() {
 
       it('should send an event and properties', function(){
         analytics.track('event', { property: true });
-        analytics.called(window.fbq.push, ['trackCustom', 'event', { property: true }]);
+        analytics.called(window._fbq.push, ['trackCustom', 'event', { property: true }]);
       });
 
       it('should send ecommerce event - Viewed Product Category', function() {
@@ -130,7 +134,7 @@ describe('Facebook Conversion Tracking', function() {
           id: '507f1f77bcf86cd799439011',
           category: 'cat'
         });
-        analytics.called(window.fbq.push, ['track', 'ViewContent', {
+        analytics.called(window._fbq.push, ['track', 'ViewContent', {
           content_ids: ['507f1f77bcf86cd799439011'],
           content_type: 'cat'
         }]);
@@ -147,7 +151,7 @@ describe('Facebook Conversion Tracking', function() {
           category: 'cat 1',
           sku: 'p-298'
         });
-        analytics.called(window.fbq.push, ['track', 'ViewContent', {
+        analytics.called(window._fbq.push, ['track', 'ViewContent', {
           content_ids: ['507f1f77bcf86cd799439011'],
           content_type: 'product',
           content_name: 'my product',
@@ -168,7 +172,7 @@ describe('Facebook Conversion Tracking', function() {
           category: 'cat 1',
           sku: 'p-298'
         });
-        analytics.called(window.fbq.push, ['track', 'AddToCart', {
+        analytics.called(window._fbq.push, ['track', 'AddToCart', {
           content_ids: ['507f1f77bcf86cd799439011'],
           content_type: 'product',
           content_name: 'my product',
@@ -187,7 +191,7 @@ describe('Facebook Conversion Tracking', function() {
           currency: 'USD',
           value: 0.50
       });
-      analytics.called(window.fbq.push, ['track', 'Purchase', {
+      analytics.called(window._fbq.push, ['track', 'Purchase', {
         content_ids: ['507f1f77bcf86cd799439011', '505bd76785ebb509fc183733'],
         content_type: 'product',
         currency: 'USD',
