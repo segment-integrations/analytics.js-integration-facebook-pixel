@@ -14,7 +14,8 @@ describe('Facebook Pixel', function() {
     standardEvents: {
       standardEvent: 'standard'
     },
-    pixelId: '123123123'
+    pixelId: '123123123',
+    agent: 'test'
   };
 
   beforeEach(function() {
@@ -48,7 +49,7 @@ describe('Facebook Pixel', function() {
       });
 
       it('should set the correct agent and version', function() {
-        analytics.equal(window.fbq.agent, 'seg');
+        analytics.equal(window.fbq.agent, 'test');
         analytics.equal(window.fbq.version, '2.0');
       });
 
@@ -210,6 +211,24 @@ describe('Facebook Pixel', function() {
           });
         });
 
+        it('Started Order', function() {
+          analytics.track('Started Order', {
+            products: [
+              { id: '507f1f77bcf86cd799439011' },
+              { id: '505bd76785ebb509fc183733' }
+            ],
+            currency: 'USD',
+            revenue: 0.50
+          });
+          analytics.called(window.fbq, 'track', 'InitiateCheckout', {
+            content_ids: ['507f1f77bcf86cd799439011', '505bd76785ebb509fc183733'],
+            content_type: 'product',
+            currency: 'USD',
+            value: '0.50',
+            num_items: 2
+          });
+        });
+
         it('Completing an Order', function() {
           analytics.track('Completed Order', {
             products: [
@@ -223,7 +242,8 @@ describe('Facebook Pixel', function() {
             content_ids: ['507f1f77bcf86cd799439011', '505bd76785ebb509fc183733'],
             content_type: 'product',
             currency: 'USD',
-            value: '0.50'
+            value: '0.50',
+            num_items: 2
           });
         });
 
@@ -241,7 +261,8 @@ describe('Facebook Pixel', function() {
             content_ids: ['507f1f77bcf86cd799439011', '505bd76785ebb509fc183733'],
             content_type: 'product',
             currency: 'USD',
-            value: '0.50'
+            value: '0.50',
+            num_items: 2
           });
           analytics.called(window.fbq, 'track', '123456', {
             currency: 'USD',
