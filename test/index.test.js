@@ -214,6 +214,7 @@ describe('Facebook Pixel', function() {
 
         it('Completing an Order', function() {
           analytics.track('Completed Order', {
+            orderId: '2aq2hmlbkh6zp9g',
             products: [
               { id: '507f1f77bcf86cd799439011' },
               { id: '505bd76785ebb509fc183733' }
@@ -225,6 +226,7 @@ describe('Facebook Pixel', function() {
             content_ids: ['507f1f77bcf86cd799439011', '505bd76785ebb509fc183733'],
             content_type: 'product',
             currency: 'USD',
+            order_id: '2aq2hmlbkh6zp9g',
             value: '0.50'
           });
         });
@@ -232,6 +234,7 @@ describe('Facebook Pixel', function() {
         it('Should send both pixel and standard event if mapped', function() {
           facebookPixel.options.legacyEvents = { 'Completed Order': '123456' };
           analytics.track('Completed Order', {
+            orderId: '2aq2hmlbkh6zp9g',
             products: [
               { id: '507f1f77bcf86cd799439011' },
               { id: '505bd76785ebb509fc183733' }
@@ -243,6 +246,7 @@ describe('Facebook Pixel', function() {
             content_ids: ['507f1f77bcf86cd799439011', '505bd76785ebb509fc183733'],
             content_type: 'product',
             currency: 'USD',
+            order_id: '2aq2hmlbkh6zp9g',
             value: '0.50'
           });
           analytics.called(window.fbq, 'track', '123456', {
