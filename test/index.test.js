@@ -232,11 +232,11 @@ describe('Facebook Pixel', function() {
             product_id: '507f1f77bcf86cd799439011',
             currency: 'USD',
             quantity: 1,
-            price: 24.75,
+            price: 44.33,
             name: 'my product',
             category: 'cat 1',
             sku: 'p-298',
-            value: 42.33
+            value: 24.75
           });
           analytics.called(window.fbq, 'track', 'ViewContent', {
             content_ids: ['507f1f77bcf86cd799439011'],
@@ -253,11 +253,11 @@ describe('Facebook Pixel', function() {
             product_id: '507f1f77bcf86cd799439011',
             currency: 'USD',
             quantity: 1,
-            price: 24.75,
+            price: 44.33,
             name: 'my product',
             category: 'cat 1',
             sku: 'p-298',
-            value: 42.33
+            value: 24.75
           });
           analytics.called(window.fbq, 'track', 'AddToCart', {
             content_ids: ['507f1f77bcf86cd799439011'],
