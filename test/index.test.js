@@ -236,7 +236,7 @@ describe('Facebook Pixel', function() {
             name: 'my product',
             category: 'cat 1',
             sku: 'p-298',
-            value: 24.75
+            value: 42.33
           });
           analytics.called(window.fbq, 'track', 'ViewContent', {
             content_ids: ['507f1f77bcf86cd799439011'],
@@ -257,7 +257,7 @@ describe('Facebook Pixel', function() {
             name: 'my product',
             category: 'cat 1',
             sku: 'p-298',
-            value: 24.75
+            value: 42.33
           });
           analytics.called(window.fbq, 'track', 'AddToCart', {
             content_ids: ['507f1f77bcf86cd799439011'],
