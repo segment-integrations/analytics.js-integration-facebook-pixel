@@ -248,6 +248,28 @@ describe('Facebook Pixel', function() {
           });
         });
 
+        it('Should map properties.price to facebooks value if price is selected', function() {
+          facebookPixel.options.valueIdentifier = 'price';
+          analytics.track('Product Viewed', {
+            product_id: '507f1f77bcf86cd799439011',
+            currency: 'USD',
+            quantity: 1,
+            price: 44.33,
+            name: 'my product',
+            category: 'cat 1',
+            sku: 'p-298',
+            value: 24.75
+          });
+          analytics.called(window.fbq, 'track', 'ViewContent', {
+            content_ids: ['507f1f77bcf86cd799439011'],
+            content_type: 'product',
+            content_name: 'my product',
+            content_category: 'cat 1',
+            currency: 'USD',
+            value: '44.33'
+          });
+        });
+
         it('Adding to Cart', function() {
           analytics.track('Product Added', {
             product_id: '507f1f77bcf86cd799439011',
@@ -266,6 +288,28 @@ describe('Facebook Pixel', function() {
             content_category: 'cat 1',
             currency: 'USD',
             value: '24.75'
+          });
+        });
+
+        it('Should map properties.price to facebooks value if price is selected', function() {
+          facebookPixel.options.valueIdentifier = 'price';
+          analytics.track('Product Added', {
+            product_id: '507f1f77bcf86cd799439011',
+            currency: 'USD',
+            quantity: 1,
+            price: 44.33,
+            name: 'my product',
+            category: 'cat 1',
+            sku: 'p-298',
+            value: 24.75
+          });
+          analytics.called(window.fbq, 'track', 'AddToCart', {
+            content_ids: ['507f1f77bcf86cd799439011'],
+            content_type: 'product',
+            content_name: 'my product',
+            content_category: 'cat 1',
+            currency: 'USD',
+            value: '44.33'
           });
         });
 
