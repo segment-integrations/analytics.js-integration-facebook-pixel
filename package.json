@@ -1,5 +1,5 @@
 {
-  "name": "@segment/analytics.js-integration-facebook-pixel",
+  "name": "@astronomerio/analytics.js-integration-facebook-pixel",
   "description": "The Facebook Pixel analytics.js integration.",
   "version": "2.4.0",
   "keywords": [
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/segment-integrations/analytics.js-integration-facebook-pixel.git"
+    "url": "git+https://github.com/astronomer-integrations/analytics.js-integration-facebook-pixel.git"
   },
-  "author": "Segment <friends@segment.com>",
+  "author": "Astronomer <info@astronomer.io>",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/segment-integrations/analytics.js-integration-facebook-pixel/issues"
+    "url": "https://github.com/astronomer-integrations/analytics.js-integration-facebook-pixel/issues"
   },
-  "homepage": "https://github.com/segment-integrations/analytics.js-integration-facebook-pixel#readme",
+  "homepage": "https://github.com/astronomer-integrations/analytics.js-integration-facebook-pixel#readme",
   "dependencies": {
     "@ndhoule/each": "^2.0.1",
     "@ndhoule/foldl": "^2.0.1",
