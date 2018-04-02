@@ -76,6 +76,11 @@ describe('Facebook Pixel', function() {
         analytics.equal(window.fbq.disablePushState, true);
       });
 
+      it('should set allowDuplicatePageViews to true', function() {
+        analytics.initialize();
+        analytics.equal(window.fbq.allowDuplicatePageViews, true);
+      });
+
       it('should create fbq object', function() {
         analytics.initialize();
         analytics.assert(window.fbq instanceof Function);
