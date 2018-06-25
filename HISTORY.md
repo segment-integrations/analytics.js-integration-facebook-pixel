@@ -1,3 +1,7 @@
+2.5.0 / 2018-06-22
+==================
+
+  * Map productIds to content_ids param instead of product category.
 
 2.4.2 / 2018-04-02
 ==================
